@@ -1,7 +1,12 @@
-const book = {
-    title: 'Ego is the enemy',
-    author: 'Ryan Holiday'
-}
+const fs = require('fs')
 
-const bookJSON = JSON.stringify(book);
-console.group(bookJSON);
+
+const dataBuffer = fs.readFileSync('1-json.json')
+const dataJSON = dataBuffer.toString()
+const user = JSON.parse(dataJSON);
+
+user.name = 'Nick'
+user.age = 37
+
+const userJSON = JSON.stringify(user);
+fs.writeFileSync('1-json.json', userJSON)
