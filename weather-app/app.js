@@ -1,5 +1,7 @@
 const request = require('postman-request')
 const chalk = require('chalk')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
 // const url = 'http://api.weatherstack.com/current?access_key=06906417837c985be2a41645ac368b7f&query=37.8267,-122.4233&units=m'
 
@@ -14,16 +16,20 @@ const chalk = require('chalk')
 //     }
 // })
 
-const geocodeURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/fsegseg.json?access_token=pk.eyJ1Ijoibmlja3Q4NCIsImEiOiJja3JxYXd0cnAybzY1Mm9wZTVweGppbHFpIn0.Oye2WExk2a2DXLCIr7ENDw&limit=1'
+const address = process.argv[2]
 
-request({ url: geocodeURL, json: true }, (error, response) => {
+geocode(address, (error, data) => {
     if (error) {
-        console.log(chalk.red('Unable to connect to location service!'))
-    } else if (response.body.features.length === 0) {
-        console.log(chalk.red('Unable to find location!'))
-    } else {
-        const latitude = response.body.features[0].center[0]
-        const longitude = response.body.features[0].center[1]
-        console.log(latitude, longitude);
+        return console.log(error)
     }
+
+    forecast(data.latitude, data.longitude, (error, forecastData) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        console.log(data.location)
+        console.log(forecastData)
+    })
 })
+
