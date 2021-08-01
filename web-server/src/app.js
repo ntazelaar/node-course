@@ -39,6 +39,33 @@ app.get('/help', (request, response) => {
     })
 })
 
+app.get('/weather', (request, response) => {
+    if (!request.query.address) {
+        return response.send({
+            error: 'You must provide an address'
+        })
+    }
+
+    response.send({
+        location: "Den Haag",
+        forecast: "Sunny",
+        address: request.query.address
+    })
+})
+
+app.get('/products', (request, response) => {
+    if (!request.query.search) {
+        return response.send({
+            error: 'You must provide a search term!'
+        })
+    }
+
+    console.log(request.query.search)
+    response.send({
+        products: []
+    })
+})
+
 app.get('/help/*', (request, response) => {
     response.render('404', {
         title: '404',
@@ -52,14 +79,6 @@ app.get('*', (request, response) => {
         title: '404',
         name: 'Nick Tazelaar',
         errorText: 'Page not found'
-    })
-})
-
-
-app.get('/weather', (request, response) => {
-    response.send({
-        location: "Den Haag",
-        forecast: "Sunny"
     })
 })
 
