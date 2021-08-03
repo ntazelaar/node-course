@@ -16,53 +16,32 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
 
     const db = client.db(databaseName)
 
-    db.collection('users').insertOne({
-        _id: id,
-        name: 'Nick',
-        age: 37
-    }, (error, result) => {
+    // db.collection('users').findOne({ _id: new ObjectId("61091421370bf9e08923b3ef") }, (error, user) => {
+    //     if (error) {
+    //         return console.log('Unable to fetch')
+    //     }
+
+    //     console.log(user)
+    // })
+
+    // db.collection('users').find({ age: 37 }).toArray((error, users) => {
+    //     console.log(users)
+    // })
+
+    db.collection('tasks').findOne({ _id: new ObjectId('61090e8c3b1b2a1c1995a931') }, (error, task) => {
         if (error) {
-            return console.log('Unable to insert user')
+            return console.log('Unable to fetch')
         }
 
-        console.log(result)
+        console.log(task)
     })
 
-    // db.collection('users').insertMany([
-    //     {
-    //         name: 'Tim',
-    //         age: 35
-    //     },
-    //     {
-    //         name: 'Samantha',
-    //         age: 30
-    //     }
-    // ], (error, result) => {
-    //     if (error) {
-    //         return console.log('Unable to insert documents')
-    //     }
+    db.collection('tasks').find({ completed: false }).toArray((error, tasks) => {
+        if (error) {
+            return console.log('Unable to fetch')
+        }
 
-    //     console.log(result)
-    // })
+        console.log(tasks)
+    })
 
-    // db.collection('tasks').insertMany([
-    //     {
-    //         description: 'Task One',
-    //         completed: false
-    //     },
-    //     {
-    //         description: 'Task Two',
-    //         completed: true
-    //     },
-    //     {
-    //         description: 'Task Three',
-    //         completed: false
-    //     }
-    // ], (error, result) => {
-    //     if (error) {
-    //         return console.log('Unable to insert documents')
-    //     }
-
-    //     console.log(result)
-    // })
 })
