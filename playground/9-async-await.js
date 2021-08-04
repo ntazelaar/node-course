@@ -17,11 +17,8 @@ const doWork = async () => {
     return sum3
 }
 
-// doWork().then((result) => {
-//     console.log('result', result)
-// }).catch((error) => {
-//     console.log('Error!', error)
-// })
-
-const sum = await doWork()
-console.log(sum)
+doWork().then((result) => {
+    console.log('result', result)
+}).catch((error) => {
+    console.log('Error!', error)
+})
