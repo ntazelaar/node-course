@@ -101,15 +101,17 @@ userSchema.pre('findOneAndUpdate', async function (next) {
     const user = await this.model.findOne(this.getQuery())
     const update = this.getUpdate()
 
-    try {
-        const isMatch = await bcrypt.compare(update.password, user.password)
-        if (!isMatch) {
-            update.password = await bcrypt.hash(update.password, 8)
-        } else {
-            update.password = user.password
+    if (update.password) {
+        try {
+            const isMatch = await bcrypt.compare(update.password, user.password)
+            if (!isMatch) {
+                update.password = await bcrypt.hash(update.password, 8)
+            } else {
+                update.password = user.password
+            }
+        } catch (error) {
+            throw new Error(error)
         }
-    } catch (error) {
-        throw new Error(error)
     }
 
     next()
