@@ -40,3 +40,24 @@ test('Should not delete task that is owned by another user', async () => {
     const task = await Task.findById(taskOne._id)
     expect(task).not.toBeNull()
 })
+
+test('Should not delete task if unauthenticated', async () => {
+    await request(app)
+        .delete('/tasks/' + taskOne._id)
+        .send()
+        .expect(401)
+
+    const task = await Task.findById(taskOne._id)
+    expect(task).not.toBeNull()
+})
+
+test('Should  delete user task', async () => {
+    await request(app)
+        .delete('/tasks/' + taskOne._id)
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send()
+        .expect(200)
+
+    const task = await Task.findById(taskOne._id)
+    expect(task).toBeNull()
+})

@@ -29,6 +29,44 @@ test('Should sign up a new user', async () => {
     expect(user.password).not.toBe('Red123$!')
 })
 
+test('Should not sign up a new user with invalid name', async () => {
+    const newUser = {
+        email: 'rick@example.com',
+        password: 'kcir123$!'
+    }
+
+    await request(app).post('/users').send(newUser).expect(400)
+
+    const user = await User.findOne({ email: newUser.email })
+    expect(user).toBeNull()
+})
+
+test('Should not sign up a new user with invalid password', async () => {
+    const newUser = {
+        name: 'Rick',
+        email: 'rick@example.com',
+        password: '43$!'
+    }
+
+    await request(app).post('/users').send(newUser).expect(400)
+
+    const user = await User.findOne({ email: newUser.email })
+    expect(user).toBeNull()
+})
+
+test('Should not sign up a new user with invalid email', async () => {
+    const newUser = {
+        name: 'Rick',
+        email: 'rick@fear',
+        password: 'kcir32343$!'
+    }
+
+    await request(app).post('/users').send(newUser).expect(400)
+
+    const user = await User.findOne({ email: newUser.email })
+    expect(user).toBeNull()
+})
+
 test('Should login existing user', async () => {
     const response = await request(app).post('/users/login').send({
         email: userOne.email,
