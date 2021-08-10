@@ -4,6 +4,7 @@ const http = require('http')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)
@@ -18,14 +19,19 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
 
-    socket.on('join', ({ username, room }) => {
-        socket.join(room)
+    socket.on('join', ({ username, room }, callback) => {
+        const { error, user } = addUser({ id: socket.id, username, room })
 
-        socket.emit('message', generateMessage(`Welcome ${username}!`))
-        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined`))
+        if (error) {
+            return callback(error)
+        }
 
-        // socket.emit, io.emit socket.broadcast.emit
-        // io.to.emit, socket.broadcast.to.emit
+        socket.join(user.room)
+
+        socket.emit('message', generateMessage(`Welcome ${user.username}!`))
+        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined`))
+
+        callback()
     })
 
     socket.on('sendMessage', (message, callback) => {
@@ -35,7 +41,7 @@ io.on('connection', (socket) => {
             return callback('Profanity is not allowed!')
         }
 
-        io.to('Den Haag').emit('message', generateMessage(message))
+        io.to('bla').emit('message', generateMessage(message))
         callback()
     })
 
@@ -45,7 +51,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', generateMessage('A user has left!'))
+        const user = removeUser(socket.id)
+
+        if (user) {
+            io.to(user.room).emit('message', generateMessage(`${user.username} has left!`))
+        }
     })
 })
 
